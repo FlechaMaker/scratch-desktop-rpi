@@ -7,11 +7,11 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "clean": "rimraf ./dist ./static/assets",
-    "clean:all": "npm run clean; npm run clean:unpatch; npm run clean:packages",
+    "clean:all": "npm run clean; rm -rf tmp; run clean:unpatch; npm run clean:packages",
     "clean:unpatch": "git apply --verbose --reject --reverse patches/*.patch && rm static/sense_hat_text.bmp",
     "clean:packages": "rm -rf node_modules",
     "start": "mkdirp ./dist && electron-webpack dev --bail --display-error-details --env.minify=false --no-progress",
-    "addExtensions": "sh node_modules/chatgpt2scratch/install.sh",
+    "installExtensions": "sh ./patches/extensions/install.sh",
     "compile": "mkdirp ./dist && electron-webpack --bail --display-error-details --env.minify=false --no-progress && cp patches/*.bmp ./static/",
     "compile:cpp32": "CXX=arm-linux-gnueabihf-g++ CC=arm-linux-gnueabihf-gcc node ./node_modules/node-gyp/bin/node-gyp.js configure build -C ./cpp && cp ./cpp/build/Release/gpiolib.node ./static/",
     "compile:cpp64": "CXX=g++ CC=gcc node ./node_modules/node-gyp/bin/node-gyp.js configure build -C ./cpp && cp ./cpp/build/Release/gpiolib.node ./static/",
