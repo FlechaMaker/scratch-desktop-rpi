@@ -7,8 +7,8 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "clean": "rimraf ./dist ./static/assets",
-    "clean:all": "npm run clean && npm run clean:unpatch && npm run clean:packages",
-    "clean:unpatch": "git apply --reverse patches/*.patch && rm static/sense_hat_text.bmp",
+    "clean:all": "npm run clean; npm run clean:unpatch; npm run clean:packages",
+    "clean:unpatch": "git apply --verbose --reject --reverse patches/*.patch && rm static/sense_hat_text.bmp",
     "clean:packages": "rm -rf node_modules",
     "start": "mkdirp ./dist && electron-webpack dev --bail --display-error-details --env.minify=false --no-progress",
     "compile": "mkdirp ./dist && electron-webpack --bail --display-error-details --env.minify=false --no-progress && cp patches/*.bmp ./static/",
