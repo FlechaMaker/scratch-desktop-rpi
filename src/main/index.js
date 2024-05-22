@@ -44,6 +44,9 @@ const _windows = {};
 // this must happen BEFORE the app ready event!
 app.commandLine.appendSwitch('host-resolver-rules', 'MAP device-manager.scratch.mit.edu 127.0.0.1');
 
+// For speech2scratch
+app.commandLine.appendSwitch('enable-features', 'WebSpeechAPI');
+
 const displayPermissionDeniedWarning = (browserWindow, permissionType) => {
     let title;
     let message;

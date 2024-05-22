@@ -1,0 +1,37 @@
+diff --git a/node_modules/posenet2scratch/install.sh b/node_modules/posenet2scratch/install.sh
+index 2053968..113d0df 100644
+--- a/node_modules/posenet2scratch/install.sh
++++ b/node_modules/posenet2scratch/install.sh
+@@ -6,20 +6,21 @@ EXTENSION_NAME=Posenet2Scratch
+ EXTENSION_ID=posenet2scratch
+ COLLABORATOR=champierre
+ EXTENSION_DESCRIPTION="PoseNet2Scratch Blocks."
++EXTENSION_DIR=node_modules/${EXTENSION_ID}
+ 
+ cd node_modules/scratch-vm
+ npm install ml5
+ cd ../../
+ 
+ mkdir -p node_modules/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}
+-cp ${EXTENSION_ID}/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}/index.js node_modules/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}/
++cp ${EXTENSION_DIR}/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}/index.js node_modules/scratch-vm/src/extensions/scratch3_${EXTENSION_ID}/
+ mv node_modules/scratch-vm/src/extension-support/extension-manager.js node_modules/scratch-vm/src/extension-support/extension-manager.js_orig
+ sed -e "s|class ExtensionManager {$|builtinExtensions['${EXTENSION_ID}'] = () => require('../extensions/scratch3_${EXTENSION_ID}');${LF}${LF}class ExtensionManager {|g" node_modules/scratch-vm/src/extension-support/extension-manager.js_orig > node_modules/scratch-vm/src/extension-support/extension-manager.js
+ 
+-mkdir -p src/lib/libraries/extensions/${EXTENSION_ID}
+-cp ${EXTENSION_ID}/scratch-gui/src/lib/libraries/extensions/${EXTENSION_ID}/${EXTENSION_ID}.png src/lib/libraries/extensions/${EXTENSION_ID}/
+-cp ${EXTENSION_ID}/scratch-gui/src/lib/libraries/extensions/${EXTENSION_ID}/${EXTENSION_ID}-small.png src/lib/libraries/extensions/${EXTENSION_ID}/
+-mv src/lib/libraries/extensions/index.jsx src/lib/libraries/extensions/index.jsx_orig
++mkdir -p node_modules/scratch-gui/src/lib/libraries/extensions/${EXTENSION_ID}
++cp ${EXTENSION_DIR}/scratch-gui/src/lib/libraries/extensions/${EXTENSION_ID}/${EXTENSION_ID}.png node_modules/scratch-gui/src/lib/libraries/extensions/${EXTENSION_ID}/
++cp ${EXTENSION_DIR}/scratch-gui/src/lib/libraries/extensions/${EXTENSION_ID}/${EXTENSION_ID}-small.png node_modules/scratch-gui/src/lib/libraries/extensions/${EXTENSION_ID}/
++mv node_modules/scratch-gui/src/lib/libraries/extensions/index.jsx node_modules/scratch-gui/src/lib/libraries/extensions/index.jsx_orig
+ DESCRIPTION="\
+     {${LF}\
+         name: '${EXTENSION_NAME}',${LF}\
+@@ -39,4 +40,4 @@ DESCRIPTION="\
+         internetConnectionRequired: true,${LF}\
+         bluetoothRequired: false${LF}\
+     },"
+-sed -e "s|^export default \[$|import ${EXTENSION_ID}IconURL from './${EXTENSION_ID}/${EXTENSION_ID}.png';${LF}import ${EXTENSION_ID}InsetIconURL from './${EXTENSION_ID}/${EXTENSION_ID}-small.png';${LF}${LF}export default [${LF}${DESCRIPTION}|g" src/lib/libraries/extensions/index.jsx_orig > src/lib/libraries/extensions/index.jsx
++sed -e "s|^export default \[$|import ${EXTENSION_ID}IconURL from './${EXTENSION_ID}/${EXTENSION_ID}.png';${LF}import ${EXTENSION_ID}InsetIconURL from './${EXTENSION_ID}/${EXTENSION_ID}-small.png';${LF}${LF}export default [${LF}${DESCRIPTION}|g" node_modules/scratch-gui/src/lib/libraries/extensions/index.jsx_orig > node_modules/scratch-gui/src/lib/libraries/extensions/index.jsx
