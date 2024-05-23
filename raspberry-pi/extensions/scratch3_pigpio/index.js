@@ -135,6 +135,103 @@ class Scratch3PiGPIOBlocks {
                         }
                     }
                 },
+                {
+                    opcode: 'motor_run_for_degrees',
+                    text: formatMessage({
+                        id: 'pigpio.motor_run_for_degrees',
+                        default: 'モーター [ID] を [DEGREES] 度 (-180~180) [SPEED] の速さ (-100~100)で動かす',
+                        description: 'python'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        ID: {
+                            type: ArgumentType.STRING,
+                            menu: 'motor_id',
+                            defaultValue: 'A'
+                        },
+                        DEGREES: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 180
+                        },
+                        SPEED: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 100
+                        }
+                    }
+
+                },
+                {
+                    opcode: 'motor_run_for_rotations',
+                    text: formatMessage({
+                        id: 'pigpio.motor_run_for_rotations',
+                        default: 'モーター [ID] を [ROTATIONS] 回転 [SPEED] の速さ (-100~100)で動かす',
+                        description: 'python'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        ID: {
+                            type: ArgumentType.STRING,
+                            menu: 'motor_id',
+                            defaultValue: 'A'
+                        },
+                        ROTATIONS: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 1
+                        },
+                        SPEED: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 100
+                        }
+                    },
+                },
+                {
+                    opcode: 'motor_run_for_seconds',
+                    text: formatMessage({
+                        id: 'pigpio.motor_run_for_seconds',
+                        default: 'モーター [ID] を [SECONDS] 秒 [SPEED] の速さ (-100~100)で動かす',
+                        description: 'python'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        ID: {
+                            type: ArgumentType.STRING,
+                            menu: 'motor_id',
+                            defaultValue: 'A'
+                        },
+                        SECONDS: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 1
+                        },
+                        SPEED: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 100
+                        }
+                    }
+                },
+                {
+                    opcode: 'motor_run_to_position',
+                    text: formatMessage({
+                        id: 'pigpio.motor_run_to_position',
+                        default: 'モーター [ID] を [POSITION] の位置に速さ [SPEED] (-100~100) で動かす',
+                        description: 'python'
+                    }),
+                    blockType: BlockType.COMMAND,
+                    arguments: {
+                        ID: {
+                            type: ArgumentType.STRING,
+                            menu: 'motor_id',
+                            defaultValue: 'A'
+                        },
+                        POSITION: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        SPEED: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 100
+                        }
+                    }
+                }
             ],
             menus: {
                 gpios: {
@@ -188,6 +285,42 @@ class Scratch3PiGPIOBlocks {
                             value: 'none'
                         }
                     ]
+                },
+                motor_id: {
+                    items: [
+                        {
+                            text: formatMessage({
+                                id: 'pigpio.motor_id_a',
+                                default: 'A',
+                                description: 'motor id A'
+                            }),
+                            value: 'A'
+                        },
+                        {
+                            text: formatMessage({
+                                id: 'pigpio.motor_id_b',
+                                default: 'B',
+                                description: 'motor id B'
+                            }),
+                            value: 'B'
+                        },
+                        {
+                            text: formatMessage({
+                                id: 'pigpio.motor_id_c',
+                                default: 'C',
+                                description: 'motor id C'
+                            }),
+                            value: 'C'
+                        },
+                        {
+                            text: formatMessage({
+                                id: 'pigpio.motor_id_d',
+                                default: 'D',
+                                description: 'motor id D'
+                            }),
+                            value: 'D'
+                        }
+                    ]
                 }
             }
         };
@@ -198,11 +331,11 @@ class Scratch3PiGPIOBlocks {
     {
         const pin = Cast.toNumber (args.GPIO);
         const val = Cast.toString (args.HILO);
-        state = gpio.get(pin,-1,-1) // Get state of pin, leave pin as input/output, leave pull state
+        const state = gpio.get(pin,-1,-1); // Get state of pin, leave pin as input/output, leave pull state
+        let binary = 0;
 
-        binary = 0
-        if(val == 'high') 
-            binary = 1
+        if(val == 'high')
+            binary = 1;
 
         return state == binary
     }
@@ -212,9 +345,9 @@ class Scratch3PiGPIOBlocks {
     {
         const pin = Cast.toNumber (args.GPIO);
         const val = Cast.toString (args.HILO);
-        state = gpio.get(pin,-1,-1) // Get state of pin, leave pin as input/output, leave pull state
-    
-        binary = 0
+        const state = gpio.get(pin,-1,-1); // Get state of pin, leave pin as input/output, leave pull state
+        let binary = 0;
+
         if(val == 'high') 
             binary = 1
 
@@ -224,11 +357,11 @@ class Scratch3PiGPIOBlocks {
     // Set pin as output and set drive
     set_gpio (args)
     {
-        drive = 0
+        let drive = 0;
         if(Cast.toString(args.HILO) == "high")
             drive = 1;
 
-        gpio.set(Cast.toNumber(args.GPIO),drive);   
+        gpio.set(Cast.toNumber(args.GPIO),drive);
     }
 
     // Set pin as input, and set pull paramter
@@ -244,6 +377,77 @@ class Scratch3PiGPIOBlocks {
         gpio.pull(pin,op);
     }
 
+    motor_run_for_degrees (args)
+    {
+        const id = Cast.toString(args.ID);
+        const degrees = Cast.toNumber(args.DEGREES);
+        const speed = Cast.toNumber(args.SPEED);
+
+        const command = `python static/buildhat/motor-run.py run_for_degrees ${id} ${degrees} ${speed}`;
+        console.log("Exec command: ", command);
+        cp.exec(command, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            console.error(`stderr: ${stderr}`);
+        });
+    }
+
+    motor_run_for_rotations (args)
+    {
+        const id = Cast.toString(args.ID);
+        const rotations = Cast.toNumber(args.ROTATIONS);
+        const speed = Cast.toNumber(args.SPEED);
+
+        const command = `python static/buildhat/motor-run.py run_for_rotations ${id} ${rotations} ${speed}`;
+        console.log("Exec command: ", command);
+        cp.exec(command, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            console.error(`stderr: ${stderr}`);
+        });
+    }
+
+    motor_run_for_seconds (args)
+    {
+        const id = Cast.toString(args.ID);
+        const seconds = Cast.toNumber(args.SECONDS);
+        const speed = Cast.toNumber(args.SPEED);
+
+        const command = `python static/buildhat/motor-run.py run_for_seconds ${id} ${seconds} ${speed}`;
+        console.log("Exec command: ", command);
+        cp.exec(command, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+            }
+            console.log(`stdout: ${stdout}`);
+            console.error(`stderr: ${stderr}`);
+        });
+    }
+
+    motor_run_to_position (args)
+    {
+        const id = Cast.toString(args.ID);
+        const position = Cast.toNumber(args.POSITION);
+        const speed = Cast.toNumber(args.SPEED);
+
+        const command = `python static/buildhat/motor-run.py run_to_position ${id} ${position} ${speed}`;
+        console.log("Exec command: ", command);
+        cp.exec(command, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            console.error(`stderr: ${stderr}`);
+        });
+    }
+    
 }
 
 module.exports = Scratch3PiGPIOBlocks;

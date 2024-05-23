@@ -47,14 +47,16 @@ index a5e2c4e..88c5ba2 100644
  };
 diff --git a/node_modules/scratch-vm/src/extensions/scratch3_pigpio/index.js b/node_modules/scratch-vm/src/extensions/scratch3_pigpio/index.js
 new file mode 100644
-index 0000000..4dd36ef
+index 0000000..7742b1d
 --- /dev/null
 +++ b/node_modules/scratch-vm/src/extensions/scratch3_pigpio/index.js
-@@ -0,0 +1,247 @@
+@@ -0,0 +1,454 @@
 +const formatMessage = require('format-message');
 +const ArgumentType = require('../../extension-support/argument-type');
 +const BlockType = require('../../extension-support/block-type');
 +const Cast = require('../../util/cast');
++const fs = window.require('fs');
++const cp = window.require('child_process');
 +const path = window.require('path');
 +const gpio = window.require(path.join(__static,'gpiolib.node'))
 +
@@ -186,6 +188,103 @@ index 0000000..4dd36ef
 +                        }
 +                    }
 +                },
++                {
++                    opcode: 'motor_run_for_degrees',
++                    text: formatMessage({
++                        id: 'pigpio.motor_run_for_degrees',
++                        default: 'モーター [ID] を [DEGREES] 度 (-180~180) [SPEED] の速さ (-100~100)で動かす',
++                        description: 'python'
++                    }),
++                    blockType: BlockType.COMMAND,
++                    arguments: {
++                        ID: {
++                            type: ArgumentType.STRING,
++                            menu: 'motor_id',
++                            defaultValue: 'A'
++                        },
++                        DEGREES: {
++                            type: ArgumentType.NUMBER,
++                            defaultValue: 180
++                        },
++                        SPEED: {
++                            type: ArgumentType.NUMBER,
++                            defaultValue: 100
++                        }
++                    }
++
++                },
++                {
++                    opcode: 'motor_run_for_rotations',
++                    text: formatMessage({
++                        id: 'pigpio.motor_run_for_rotations',
++                        default: 'モーター [ID] を [ROTATIONS] 回転 [SPEED] の速さ (-100~100)で動かす',
++                        description: 'python'
++                    }),
++                    blockType: BlockType.COMMAND,
++                    arguments: {
++                        ID: {
++                            type: ArgumentType.STRING,
++                            menu: 'motor_id',
++                            defaultValue: 'A'
++                        },
++                        ROTATIONS: {
++                            type: ArgumentType.NUMBER,
++                            defaultValue: 1
++                        },
++                        SPEED: {
++                            type: ArgumentType.NUMBER,
++                            defaultValue: 100
++                        }
++                    },
++                },
++                {
++                    opcode: 'motor_run_for_seconds',
++                    text: formatMessage({
++                        id: 'pigpio.motor_run_for_seconds',
++                        default: 'モーター [ID] を [SECONDS] 秒 [SPEED] の速さ (-100~100)で動かす',
++                        description: 'python'
++                    }),
++                    blockType: BlockType.COMMAND,
++                    arguments: {
++                        ID: {
++                            type: ArgumentType.STRING,
++                            menu: 'motor_id',
++                            defaultValue: 'A'
++                        },
++                        SECONDS: {
++                            type: ArgumentType.NUMBER,
++                            defaultValue: 1
++                        },
++                        SPEED: {
++                            type: ArgumentType.NUMBER,
++                            defaultValue: 100
++                        }
++                    }
++                },
++                {
++                    opcode: 'motor_run_to_position',
++                    text: formatMessage({
++                        id: 'pigpio.motor_run_to_position',
++                        default: 'モーター [ID] を [POSITION] の位置に速さ [SPEED] (-100~100) で動かす',
++                        description: 'python'
++                    }),
++                    blockType: BlockType.COMMAND,
++                    arguments: {
++                        ID: {
++                            type: ArgumentType.STRING,
++                            menu: 'motor_id',
++                            defaultValue: 'A'
++                        },
++                        POSITION: {
++                            type: ArgumentType.NUMBER,
++                            defaultValue: 0
++                        },
++                        SPEED: {
++                            type: ArgumentType.NUMBER,
++                            defaultValue: 100
++                        }
++                    }
++                }
 +            ],
 +            menus: {
 +                gpios: {
@@ -237,6 +336,42 @@ index 0000000..4dd36ef
 +                                description: 'not pulled'
 +                            }),
 +                            value: 'none'
++                        }
++                    ]
++                },
++                motor_id: {
++                    items: [
++                        {
++                            text: formatMessage({
++                                id: 'pigpio.motor_id_a',
++                                default: 'A',
++                                description: 'motor id A'
++                            }),
++                            value: 'A'
++                        },
++                        {
++                            text: formatMessage({
++                                id: 'pigpio.motor_id_b',
++                                default: 'B',
++                                description: 'motor id B'
++                            }),
++                            value: 'B'
++                        },
++                        {
++                            text: formatMessage({
++                                id: 'pigpio.motor_id_c',
++                                default: 'C',
++                                description: 'motor id C'
++                            }),
++                            value: 'C'
++                        },
++                        {
++                            text: formatMessage({
++                                id: 'pigpio.motor_id_d',
++                                default: 'D',
++                                description: 'motor id D'
++                            }),
++                            value: 'D'
 +                        }
 +                    ]
 +                }
@@ -295,6 +430,78 @@ index 0000000..4dd36ef
 +        gpio.pull(pin,op);
 +    }
 +
++    motor_run_for_degrees (args)
++    {
++        const id = Cast.toString(args.ID);
++        const degrees = Cast.toNumber(args.DEGREES);
++        const speed = Cast.toNumber(args.SPEED);
++
++        const command = `python static/buildhat/motor-run.py run_for_degrees ${id} ${degrees} ${speed}`;
++        console.log("Exec command: ", command);
++        cp.exec(command, (error, stdout, stderr) => {
++            if (error) {
++                console.error(`exec error: ${error}`);
++                return;
++            }
++            console.log(`stdout: ${stdout}`);
++            console.error(`stderr: ${stderr}`);
++        });
++    }
++
++    motor_run_for_rotations (args)
++    {
++        const id = Cast.toString(args.ID);
++        const rotations = Cast.toNumber(args.ROTATIONS);
++        const speed = Cast.toNumber(args.SPEED);
++
++        const command = `python static/buildhat/motor-run.py run_for_rotations ${id} ${rotations} ${speed}`;
++        console.log("Exec command: ", command);
++        cp.exec(command, (error, stdout, stderr) => {
++            if (error) {
++                console.error(`exec error: ${error}`);
++                return;
++            }
++            console.log(`stdout: ${stdout}`);
++            console.error(`stderr: ${stderr}`);
++        });
++    }
++
++    motor_run_for_seconds (args)
++    {
++        const id = Cast.toString(args.ID);
++        const seconds = Cast.toNumber(args.SECONDS);
++        const speed = Cast.toNumber(args.SPEED);
++
++        const command = `python static/buildhat/motor-run.py run_for_seconds ${id} ${seconds} ${speed}`;
++        console.log("Exec command: ", command);
++        cp.exec(command, (error, stdout, stderr) => {
++            if (error) {
++                console.error(`exec error: ${error}`);
++                return;
++            }
++            console.log(`stdout: ${stdout}`);
++            console.error(`stderr: ${stderr}`);
++        });
++    }
++
++    motor_run_to_position (args)
++    {
++        const id = Cast.toString(args.ID);
++        const position = Cast.toNumber(args.POSITION);
++        const speed = Cast.toNumber(args.SPEED);
++
++        const command = `python static/buildhat/motor-run.py run_to_position ${id} ${position} ${speed}`;
++        console.log("Exec command: ", command);
++        cp.exec(command, (error, stdout, stderr) => {
++            if (error) {
++                console.error(`exec error: ${error}`);
++                return;
++            }
++            console.log(`stdout: ${stdout}`);
++            console.error(`stderr: ${stderr}`);
++        });
++    }
++    
 +}
 +
 +module.exports = Scratch3PiGPIOBlocks;
