@@ -7,11 +7,13 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "clean": "rimraf ./dist ./static/assets",
-    "clean:all": "npm run clean; rimraf tmp; npm run clean:unpatch; npm run clean:packages",
-    "clean:unpatch": "git apply --verbose --reject --reverse patches/*.patch && rm static/sense_hat_text.bmp",
+    "clean:all": "npm run clean; rimraf tmp; npm run unpatch; npm run clean:packages",
     "clean:packages": "rimraf node_modules",
     "start": "mkdirp ./dist && electron-webpack dev --bail --display-error-details --env.minify=false --no-progress",
     "installExtensions": "sh ./extensions/install.sh",
+    "generatePatches": "npm run unpatch && npm uninstall --ignore-scripts --no-save scratch-gui && npm install --ignore-scripts && sh patches/generate_patches.sh && npm run postinstall",
+    "patch": "git apply patches/*.patch && mkdir -p static && cp patches/sense_hat_text.bmp static/",
+    "unpatch": "git apply --reject --reverse patches/*.patch && rm static/sense_hat_text.bmp",
     "compile": "mkdirp ./dist && electron-webpack --bail --display-error-details --env.minify=false --no-progress && cp patches/*.bmp ./static/",
     "compile:cpp32": "CXX=arm-linux-gnueabihf-g++ CC=arm-linux-gnueabihf-gcc node ./node_modules/node-gyp/bin/node-gyp.js configure build -C ./cpp && cp ./cpp/build/Release/gpiolib.node ./static/",
     "compile:cpp64": "CXX=g++ CC=gcc node ./node_modules/node-gyp/bin/node-gyp.js configure build -C ./cpp && cp ./cpp/build/Release/gpiolib.node ./static/",
@@ -26,7 +28,7 @@
     "distDev": "npm run clean && npm run compile && npm run fetch && npm run doBuild -- --mode=dev",
     "test": "npm run test:lint",
     "test:lint": "eslint --cache --color --ext .jsx,.js .",
-    "postinstall": "git apply patches/*.patch && mkdir -p static && cp patches/sense_hat_text.bmp static/ && cp -r raspberry-pi/extensions/buildhat static/ && cd node_modules/scratch-blocks/ && npm i --ignore-scripts && npm exec -c \"python build.py\""
+    "postinstall": "npm run patch && cd node_modules/scratch-blocks/ && npm i --ignore-scripts && npm exec -c \"python build.py\""
   },
   "repository": {
     "type": "git",

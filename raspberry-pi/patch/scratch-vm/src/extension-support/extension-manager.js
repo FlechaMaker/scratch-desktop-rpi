@@ -24,6 +24,7 @@ const builtinExtensions = {
     makeymakey: () => require('../extensions/scratch3_makeymakey'),
     pigpio: () => require('../extensions/scratch3_pigpio'),
     pisensehat: () => require('../extensions/scratch3_pisensehat'),
+    pibuildhat: () => require('../extensions/scratch3_pibuildhat'),
     pivsgpio: () => require('../extensions/scratch3_pivsgpio'),
     boost: () => require('../extensions/scratch3_boost'),
     gdxfor: () => require('../extensions/scratch3_gdx_for')
@@ -84,8 +85,8 @@ class ExtensionManager {
         this.pendingWorkers = [];
 
         /**
-         * Set of loaded extension URLs/IDs (equivalent for built-in extensions).
-         * @type {Set.<string>}
+         * Map of loaded extension URLs/IDs (equivalent for built-in extensions) to service name.
+         * @type {Map.<string,string>}
          * @private
          */
         this._loadedExtensions = new Map();

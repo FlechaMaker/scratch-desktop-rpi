@@ -25,6 +25,9 @@ import pigpioInsetIconURL from './pigpio/pigpio-small.svg';
 import pisensehatIconURL from './pisensehat/pisensehat.png';
 import pisensehatInsetIconURL from './pisensehat/pisensehat-small.svg';
 
+import pibuildhatIconURL from './pibuildhat/pibuildhat.png';
+import pibuildhatInsetIconURL from './pibuildhat/pibuildhat-small.svg';
+
 import pivsgpioIconURL from './pivsgpio/pivsgpio.png';
 import pivsgpioInsetIconURL from './pivsgpio/pivsgpio-small.svg';
 
@@ -204,6 +207,20 @@ export default [
             />
         ),
         featured: true
+    },
+    {
+        name: 'Raspberry Pi Build HAT',
+        extensionId: 'pibuildhat',
+        collaborator: 'Yuchi Yahagi',
+        iconURL: pibuildhatIconURL,
+        insetIconURL: pibuildhatInsetIconURL,
+        description: (
+            <FormattedMessage
+                defaultMessage="Control LEGO® Technic™ devices using Build HAT"
+                description="Control LEGO® Technic™ motors and sensors with Raspberry Pi using Build HAT"
+                id="gui.extension.pibuildhat.description"
+            />
+        ),
     },
     {
         name: 'Raspberry Pi Simple Electronics',
