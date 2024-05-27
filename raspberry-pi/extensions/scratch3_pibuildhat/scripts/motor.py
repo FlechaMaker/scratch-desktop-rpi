@@ -15,6 +15,7 @@ def handle_motor(device_no):
             }
         })
         sys.stdout.write(data + "\n")
+        sys.stdout.flush()
 
     return _handle_motor
 
@@ -40,18 +41,28 @@ if __name__ == '__main__':
         "status": "ready",
         "connected_ports": connected_ports,
     }) + "\n")
+    sys.stdout.flush()
+
     # 標準入力からJSON形式でコマンドを受け取る無限ループ
     while True:
         try:
+            # 標準入力に2行以上の命令が溜まっている場合は，最新の命令のみを処理し，他は破棄する
             line = sys.stdin.readline()
+            
             if not line:
                 sys.stderr.write("No input\n")
                 continue
+
             data = json.loads(line)
             motor_no = data['motor_no']
             motor = motors[motor_no]
             command = data['command']
             params = data['params']
+
+            sys.stdout.write(json.dumps({
+                "type": "log",
+                "message": f"Motor: {motor_no} Command: {command}, Params: {params}",
+            }) + "\n")
 
             if command == "run_for_degrees":
                 motor.run_for_degrees(params[0], speed=params[1])
@@ -66,4 +77,4 @@ if __name__ == '__main__':
             elif command == "stop":
                 motor.stop()
         except Exception as e:
-            sys.stderr.write(f"{e}\n")
+            sys.stderr.write(f"Error: {str(e)}\n")

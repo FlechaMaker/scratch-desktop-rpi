@@ -7,6 +7,40 @@ const cp = window.require('child_process');
 const path = window.require('path');
 
 /**
+ * A quick little thingy that takes a Stream instance and makes
+ * it emit 'line' events when a newline is encountered.
+ *
+ *   Usage:
+ *   ‾‾‾‾‾
+ *  emitLines(process.stdin)
+ *  process.stdin.resume()
+ *  process.stdin.setEncoding('utf8')
+ *  process.stdin.on('line', function (line) {
+ *    console.log(line event:', line)
+ *  })
+ *
+ */
+
+function emitLines (stream) {
+  var backlog = ''
+  stream.on('data', function (data) {
+    backlog += data.toString()
+    var n = backlog.indexOf('\n')
+    // got a \n? emit one or more 'line' events
+    while (~n) {
+      stream.emit('line', backlog.substring(0, n))
+      backlog = backlog.substring(n + 1)
+      n = backlog.indexOf('\n')
+    }
+  })
+  stream.on('end', function () {
+    if (backlog) {
+      stream.emit('line', backlog)
+    }
+  })
+}
+
+/**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
  * @type {string}
  */
@@ -71,37 +105,8 @@ class Scratch3PiBuildHATBlocks {
 
         this.scriptsDir = path.join(__static, '/scripts/');
 
-        this.motorRunProcess = cp.spawn('python', [path.join(this.scriptsDir, 'motor.py')]);
-        this.motorRunProcess.stdout.on('data', (data_str) => {
-            try {
-                const data = JSON.parse(data_str);
-
-                switch (data.type) {
-                    case 'status':
-                        if (data.status === 'ready') {
-                            this.ready = true;
-                            data.connected_ports.forEach((port) => {
-                                this.motorStatus[port].connected = true;
-                            });
-                        }
-                        break;
-                    case 'data':
-                        this.motorStatus[data.no].speed = data.sensors.speed;
-                        this.motorStatus[data.no].position = data.sensors.pos;
-                        this.motorStatus[data.no].absolutePosition = data.sensors.apos;
-                        break;
-                }
-            }
-            catch (e) {
-                this.error = e;
-                console.error('Error parsing motor data:', e);
-            }
-        });
-        this.motorRunProcess.stderr.on('data', (data) => {
-            this.error = e;
-            console.error(`stderr: ${data}`);
-        });
-
+        // Load the Python script
+        this._start_motor_run_process();
     }
 
 
@@ -123,6 +128,90 @@ class Scratch3PiBuildHATBlocks {
                     }),
                     blockType: BlockType.BOOLEAN,
                 },
+                {
+                    opcode: 'motor_is_connected',
+                    text: formatMessage({
+                        id: 'pibuildhat.motor_is_connected',
+                        default: 'モーター [ID] が接続されている',
+                        description: 'Check if motor is connected'
+                    }),
+                    blockType: BlockType.BOOLEAN,
+                    arguments: {
+                        ID: {
+                            type: ArgumentType.STRING,
+                            menu: 'motor_no',
+                            defaultValue: 'A'
+                        }
+                    }
+                },
+                {
+                    opcode: 'reset_all',
+                    text: formatMessage({
+                        id: 'pibuildhat.reset_all',
+                        default: '全てのモーターをリセット',
+                        description: 'Reset all motors'
+                    }),
+                    blockType: BlockType.COMMAND
+                },
+                {
+                    opcode: 'get_error',
+                    text: formatMessage({
+                        id: 'pihat.get_error',
+                        default: 'エラー内容',
+                        description: 'Get error'
+                    }),
+                    blockType: BlockType.REPORTER
+                },
+                '---',
+                {
+                    opcode: 'motor_get_speed',
+                    text: formatMessage({
+                        id: 'pibuildhat.motor_get_speed',
+                        default: 'モーター [ID] の速度',
+                        description: 'Get motor speed'
+                    }),
+                    blockType: BlockType.REPORTER,
+                    arguments: {
+                        ID: {
+                            type: ArgumentType.STRING,
+                            menu: 'motor_no',
+                            defaultValue: 'A'
+                        }
+                    }
+                },
+                {
+                    opcode: 'motor_get_position',
+                    text: formatMessage({
+                        id: 'pibuildhat.motor_get_position',
+                        default: 'モーター [ID] の位置',
+                        description: 'Get motor position'
+                    }),
+                    blockType: BlockType.REPORTER,
+                    arguments: {
+                        ID: {
+                            type: ArgumentType.STRING,
+                            menu: 'motor_no',
+                            defaultValue: 'A'
+                        }
+                    }
+                },
+                {
+                    opcode: 'motor_get_absolute_position',
+                    text: formatMessage({
+                        id: 'pibuildhat.motor_get_absolute_position',
+                        default: 'モーター [ID] の位置（１周の中の角度）',
+                        description: 'Get motor absolute position'
+                    }),
+                    blockType: BlockType.REPORTER,
+                    arguments: {
+                        ID: {
+                            type: ArgumentType.STRING,
+                            menu: 'motor_no',
+                            defaultValue: 'A'
+                        }
+                    }
+                },
+                '---',
                 {
                     opcode: 'motor_start',
                     text: formatMessage({
@@ -159,6 +248,7 @@ class Scratch3PiBuildHATBlocks {
                         }
                     }
                 },
+                '---',
                 {
                     opcode: 'motor_run_for_degrees',
                     text: formatMessage({
@@ -298,8 +388,103 @@ class Scratch3PiBuildHATBlocks {
         };
     }
 
-    motor_is_ready () {
-        return this.ready;
+    _start_motor_run_process () {
+        this.motorRunProcess = cp.spawn('python', [path.join(this.scriptsDir, 'motor.py')]);
+        emitLines(this.motorRunProcess.stdout);
+
+        this.motorRunProcess.stdout.on('line', (line) => {
+            console.log(`data: ${line}`);
+            try {
+                const data = JSON.parse(line.replace(/\s/g, ''));
+                switch (data.type) {
+                    case 'status':
+                        if (data.status === 'ready') {
+                            this.ready = true;
+                            data.connected_ports.forEach((port) => {
+                                this.motorStatus[port].connected = true;
+                            });
+                        }
+                        break;
+                    case 'data':
+                        this.motorStatus[data.no].speed = data.sensors.speed;
+                        this.motorStatus[data.no].position = data.sensors.pos;
+                        this.motorStatus[data.no].absolutePosition = data.sensors.apos;
+                        break;
+                }
+            }
+            catch (e) {
+                this.error = e;
+                console.error('Error parsing motor data:', e);
+            }
+        });
+        this.motorRunProcess.stderr.on('data', (data) => {
+            this.error = data;
+            console.error(`stderr: ${data}`);
+        });
+    }
+
+    motor_is_ready (args) {
+        return this.ready ? true : false;
+    }
+
+    motor_is_connected (args) {
+        const id = Cast.toString(args.ID);
+        return this.motorStatus[id].connected;
+    }
+
+    reset_all (args) {
+        this.ready = false;
+        this.motorStatus = {
+            A: {
+                connected: false,
+                speed: 0,
+                position: 0,
+                absolutePosition: 0
+            },
+            B: {
+                connected: false,
+                speed: 0,
+                position: 0,
+                absolutePosition: 0
+            },
+            C: {
+                connected: false,
+                speed: 0,
+                position: 0,
+                absolutePosition: 0
+            },
+            D: {
+                connected: false,
+                speed: 0,
+                position: 0,
+                absolutePosition: 0
+            }
+        };
+        this.error = null;
+        this.motorRunProcess.on('exit', (code) => {
+            console.log(`child process exited with code ${code}`);
+            this._start_motor_run_process();
+        });
+        this.motorRunProcess.kill();
+    }
+ 
+    get_error (args) {
+        return  this.error ? this.error.toString() : '';
+    }
+
+    motor_get_speed (args) {
+        const id = Cast.toString(args.ID);
+        return this.motorStatus[id].speed;
+    }
+
+    motor_get_position (args) {
+        const id = Cast.toString(args.ID);
+        return this.motorStatus[id].position;
+    }
+
+    motor_get_absolute_position (args) {
+        const id = Cast.toString(args.ID);
+        return this.motorStatus[id].absolutePosition;
     }
 
     motor_start (args)

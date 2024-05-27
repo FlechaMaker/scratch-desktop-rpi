@@ -221,6 +221,7 @@ export default [
                 id="gui.extension.pibuildhat.description"
             />
         ),
+        featured: true
     },
     {
         name: 'Raspberry Pi Simple Electronics',

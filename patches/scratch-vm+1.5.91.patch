@@ -31,20 +31,6 @@ index f52cd45..d602a5a 100644
      /**
       * MIDI note number with note picker (piano) field
       */
-diff --git a/node_modules/scratch-vm/src/extension-support/extension-manager.js b/node_modules/scratch-vm/src/extension-support/extension-manager.js
-index a5e2c4e..88c5ba2 100644
---- a/node_modules/scratch-vm/src/extension-support/extension-manager.js
-+++ b/node_modules/scratch-vm/src/extension-support/extension-manager.js
-@@ -22,6 +22,9 @@ const builtinExtensions = {
-     videoSensing: () => require('../extensions/scratch3_video_sensing'),
-     ev3: () => require('../extensions/scratch3_ev3'),
-     makeymakey: () => require('../extensions/scratch3_makeymakey'),
-+    pigpio: () => require('../extensions/scratch3_pigpio'),
-+    pisensehat: () => require('../extensions/scratch3_pisensehat'),
-+    pivsgpio: () => require('../extensions/scratch3_pivsgpio'),
-     boost: () => require('../extensions/scratch3_boost'),
-     gdxfor: () => require('../extensions/scratch3_gdx_for')
- };
 diff --git a/node_modules/scratch-vm/src/extensions/scratch3_pigpio/index.js b/node_modules/scratch-vm/src/extensions/scratch3_pigpio/index.js
 new file mode 100644
 index 0000000..4dd36ef

@@ -1,0 +1,98 @@
+diff --git a/node_modules/scratch-gui/src/lib/libraries/extensions/index.jsx b/node_modules/scratch-gui/src/lib/libraries/extensions/index.jsx
+index ba18b91..0cafb18 100644
+--- a/node_modules/scratch-gui/src/lib/libraries/extensions/index.jsx
++++ b/node_modules/scratch-gui/src/lib/libraries/extensions/index.jsx
+@@ -19,6 +19,18 @@ import translateInsetIconURL from './translate/translate-small.png';
+ import makeymakeyIconURL from './makeymakey/makeymakey.png';
+ import makeymakeyInsetIconURL from './makeymakey/makeymakey-small.svg';
+ 
++import pigpioIconURL from './pigpio/pigpio.png';
++import pigpioInsetIconURL from './pigpio/pigpio-small.svg';
++
++import pisensehatIconURL from './pisensehat/pisensehat.png';
++import pisensehatInsetIconURL from './pisensehat/pisensehat-small.svg';
++
++import pibuildhatIconURL from './pibuildhat/pibuildhat.png';
++import pibuildhatInsetIconURL from './pibuildhat/pibuildhat-small.svg';
++
++import pivsgpioIconURL from './pivsgpio/pivsgpio.png';
++import pivsgpioInsetIconURL from './pivsgpio/pivsgpio-small.svg';
++
+ import microbitIconURL from './microbit/microbit.png';
+ import microbitInsetIconURL from './microbit/microbit-small.svg';
+ import microbitConnectionIconURL from './microbit/microbit-illustration.svg';
+@@ -166,6 +178,67 @@ export default [
+         ),
+         featured: true
+     },
++    {
++        name: 'Raspberry Pi GPIO',
++        extensionId: 'pigpio',
++        collaborator: 'Raspberry Pi',
++        iconURL: pigpioIconURL,
++        insetIconURL: pigpioInsetIconURL,
++        description: (
++            <FormattedMessage
++                defaultMessage="Control Raspberry Pi GPIO lines"
++                description="Description for the 'Pi GPIO' extension"
++                id="gui.extension.pigpio.description"
++            />
++        ),
++        featured: true
++    },
++    {
++        name: 'Raspberry Pi Sense HAT',
++        extensionId: 'pisensehat',
++        collaborator: 'Raspberry Pi',
++        iconURL: pisensehatIconURL,
++        insetIconURL: pisensehatInsetIconURL,
++        description: (
++            <FormattedMessage
++                defaultMessage="Control Raspberry Pi Sense HAT"
++                description="Description for the 'Pi Sense HAT' extension"
++                id="gui.extension.pisensehat.description"
++            />
++        ),
++        featured: true
++    },
++    {
++        name: 'Raspberry Pi Build HAT',
++        extensionId: 'pibuildhat',
++        collaborator: 'Yuchi Yahagi',
++        iconURL: pibuildhatIconURL,
++        insetIconURL: pibuildhatInsetIconURL,
++        description: (
++            <FormattedMessage
++                defaultMessage="Control LEGO® Technic™ devices using Build HAT"
++                description="Control LEGO® Technic™ motors and sensors with Raspberry Pi using Build HAT"
++                id="gui.extension.pibuildhat.description"
++            />
++        ),
++        featured: true
++    },
++    {
++        name: 'Raspberry Pi Simple Electronics',
++        extensionId: 'pivsgpio',
++        collaborator: 'Raspberry Pi',
++        iconURL: pivsgpioIconURL,
++        insetIconURL: pivsgpioInsetIconURL,
++        description: (
++            <FormattedMessage
++                defaultMessage="Simple electronics with Raspberry Pi"
++                description="Description for the 'Pi Simple Electronics' extension"
++                id="gui.extension.pivsgpio.description"
++            />
++        ),
++        featured: true
++/*
++    },
+     {
+         name: 'micro:bit',
+         extensionId: 'microbit',
+@@ -317,5 +390,6 @@ export default [
+             />
+         ),
+         helpLink: 'https://scratch.mit.edu/vernier'
++*/
+     }
+ ];
