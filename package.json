@@ -11,7 +11,7 @@
     "clean:packages": "rimraf node_modules",
     "start": "mkdirp ./dist && electron-webpack dev --bail --display-error-details --env.minify=false --no-progress",
     "installExtensions": "sh ./extensions/install.sh",
-    "generatePatches": "npm run unpatch && npm uninstall --ignore-scripts --no-save scratch-gui && npm install --ignore-scripts && sh patches/generate_patches.sh && npm run postinstall",
+    "generatePatches": "npm run unpatch && npm uninstall --ignore-scripts --no-save scratch-gui && npm install && npm run unpatch; sh patches/generate_patches.sh && npm run patch",
     "patch": "git apply patches/*.patch && mkdir -p static && cp patches/sense_hat_text.bmp static/",
     "unpatch": "git apply --reject --reverse patches/*.patch && rm static/sense_hat_text.bmp",
     "compile": "mkdirp ./dist && electron-webpack --bail --display-error-details --env.minify=false --no-progress && cp patches/*.bmp ./static/",
