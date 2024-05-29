@@ -35,6 +35,7 @@
     "url": "git+ssh://git@github.com/LLK/scratch-desktop.git"
   },
   "dependencies": {
+    "openai": "^4.47.1",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
