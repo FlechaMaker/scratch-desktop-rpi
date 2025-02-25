@@ -24,6 +24,17 @@ Raspberry Piのハードウェア（センサーやLEDなど）と、AI（機械
 - [Speech2Scratch](https://github.com/champierre/speech2scratch)
 - [TM2Scratch](https://github.com/champierre/tm2scratch)
 
+# インストール手順
+1. scratch-desktop_3.30.9_arm64.debをダウンロード
+2. scratch-desktop_3.30.9_arm64.debを右クリック
+3. 「パッケージのインストール」
+4. 「このファイルをインストールしますか？」➡︎インストール
+5. 「認証」のパスワードを入力して「認証する」をクリック
+6. 進行状況を表すウィンドウが消えたら完了．
+7. 左上のラズベリーのメニューからScratchを起動
+
+
+<video src="https://github.com/user-attachments/assets/23375b75-e4a4-4485-9e66-1013283e1e0a.mov" width="50%" control />
 
 ## 開発者向けガイド
 

@@ -26,6 +26,16 @@ You can create more diverse programs by combining Raspberry Pi hardware (such as
 - [Speech2Scratch](https://github.com/champierre/speech2scratch)
 - [TM2Scratch](https://github.com/champierre/tm2scratch)
 
+# Install
+1. Download scratch-desktop_3.30.9_arm64.deb
+2. Right-click on scratch-desktop_3.30.9_arm64.deb
+3. Install Package
+4. Do you want to install this file? ➡︎ Yes
+5. Enter the password for Authentication and click Authenticate
+6. When the progress window disappears, it is done.
+7. Start Scratch from the Raspberry menu in the top left corner
+
+
 ## Developer Instructions
 
 This version of scratch will apply patches (in the patches folder) to node_modules:
