@@ -1,6 +1,30 @@
 # scratch-desktop
 
-Scratch 3.0 as a standalone desktop application
+[日本語](README.ja.md)
+
+This is a version of Scratch 3.0 for Raspberry Pi with additional extensions, primarily those available in [Stretch3](https://stretch3.github.io). 
+You can create more diverse programs by combining Raspberry Pi hardware (such as sensors and LEDs) with AI (machine learning) extensions.
+
+- Raspberry Pi BuildHAT
+    - An extension to connect and control motors from LEGO SPIKE Prime and similar devices with Raspberry Pi.
+- Raspberry Pi GPIO
+    - An extension to control Raspberry Pi's GPIO pins.
+    - (Available by default in Scratch for Raspberry Pi)
+- Raspberry Pi Sense HAT
+    - An extension to control Raspberry Pi's Sense HAT.
+    - (Available by default in Scratch for Raspberry Pi)
+- Raspberry Pi Simple Electronics
+    - A simple extension to control Raspberry Pi's GPIO pins.
+    - (Available by default in Scratch for Raspberry Pi)
+- [ChatGPT2Scratch](https://github.com/ichiroc/chatgpt2scratch)
+    - Be careful not to share your API key when sharing programs with others.
+    - Unlike the original ChatGPT2Scratch, for technical reasons, the API key must be set using blocks within the program.
+- [Facemesh2Scratch](https://github.com/champierre/facemesh2scratch)
+- [Geo Scratch](https://github.com/YcSoku/GeoScratch)
+- [PoseNet2Scratch](https://github.com/champierre/posenet2scratch)
+- [QR Code](https://github.com/sugiura-lab/scratch3-qrcode)
+- [Speech2Scratch](https://github.com/champierre/speech2scratch)
+- [TM2Scratch](https://github.com/champierre/tm2scratch)
 
 ## Developer Instructions
 
@@ -14,7 +38,7 @@ These patches are based on the files in ./raspberry-pi though the patch creation
 
 ### Releasing a new version
 
-For Raspberry Pi specific builds please note [**Making-a-Raspberry-Pi-Specific-Build**](#making-a-raspberry-pi-specific-build)
+For Raspberry Pi specific builds please note [**Making-a-Raspberry-Pi-Specific-Build**](#making-a-Raspberry-Pi-Specific-Build)
 
 Let's assume that you want to make a new release, version `3.999.0`, corresponding to `scratch-gui` version
 `0.1.0-prerelease.20yymmdd`.
