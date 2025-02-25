@@ -25,7 +25,7 @@ Raspberry Piのハードウェア（センサーやLEDなど）と、AI（機械
 - [TM2Scratch](https://github.com/champierre/tm2scratch)
 
 # インストール手順
-1. scratch-desktop_3.30.9_arm64.debをダウンロード
+1. [scratch-desktop_3.30.9_arm64.deb](https://github.com/FlechaMaker/scratch-desktop-rpi/releases/tag/3.30.9-1)をダウンロード
 2. scratch-desktop_3.30.9_arm64.debを右クリック
 3. 「パッケージのインストール」
 4. 「このファイルをインストールしますか？」➡︎インストール

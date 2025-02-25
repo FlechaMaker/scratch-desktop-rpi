@@ -27,7 +27,7 @@ You can create more diverse programs by combining Raspberry Pi hardware (such as
 - [TM2Scratch](https://github.com/champierre/tm2scratch)
 
 # Install
-1. Download scratch-desktop_3.30.9_arm64.deb
+1. Download [scratch-desktop_3.30.9_arm64.deb](https://github.com/FlechaMaker/scratch-desktop-rpi/releases/tag/3.30.9-1)
 2. Right-click on scratch-desktop_3.30.9_arm64.deb
 3. Install Package
 4. Do you want to install this file? ➡︎ Yes
